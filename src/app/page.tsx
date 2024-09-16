@@ -1,21 +1,46 @@
-export default function Home() {
-  return (
-    <main className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="container mx-auto p-4 relative">
-        <div className="bg-white border-2 border-purple-100 rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex flex-col justify-center">
-            <h1 className="text-4xl text-purple-700 font-bold mb-4">Welcome</h1>
-            <p className="text-lg text-gray-700 mb-4">
-              Massa urna magnis dignissim id euismod porttitor vitae etiam viverra nunc at adipiscing sit morbi aliquet mauris porttitor nisi, senectus pharetra, ac porttitor orci.
-            </p>
-            <a href="/" className="outline outline-1 outline-offset-2 border-purple-700 text-purple-700 hover:text-white py-2 px-4 rounded hover:bg-purple-800 md:w-auto">
-              Go to Blog
-            </a>
-          </div>
-        </div>
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
+import Image from "next/image"
 
-      </div>
-      <div className="bg-purple-800 hidden md:block absolute top-0 right-0 bottom-0 left-2/3 z-0"></div>
-    </main>
+export default function Home() {
+return (
+  <>
+    <div className="flex flex-col min-h-screen">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                    Rate the nasi kandar!
+                  </h1>
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    A community platform where all nasi kandar lovers can rate the nasi kandar, may the best nasi kandar wins!
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <Button size="lg">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline">
+                    Learn More
+                  </Button>
+                </div>
+              </div>
+            <Image
+              src="https://images.pexels.com/photos/7234281/pexels-photo-7234281.jpeg"
+              alt="Nasi Kandar dish"
+              width={2880}
+              height={1920}
+              layout="responsive"
+              priority
+            />
+            </div>
+          </div>
+        </section>
+    </div>
+  </>
+
   );
 }
