@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// schema.prisma
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                    Int                    @id @default(autoincrement())
+  username              String                 @unique
+  email                 String                 @unique
+  passwordHash          String
+  avatarUrl             String?
+  createdAt             DateTime               @default(now())
+  restaurants           Restaurant[] // Relationship
+  dishes                Dish[] // Relationship
+  ratings               Rating[] // Relationship
+  comments              Comment[] // Relationship
+  votes                 Vote[] // Relationship
+  restaurantSuggestions RestaurantSuggestion[]
+  role                  UserRole? // Relationship to UserRole
+}
+
+model Restaurant {
+  id          Int       @id @default(autoincrement())
+  name        String
+  address     String?
+  description String?
+  imageUrl    String?
+  latitude    Float?
+  longitude   Float?
+  state       String?
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now())
+  createdBy   Int
+  updatedAt   DateTime?
+  updatedBy   Int?
+  dishes      Dish[] // Relationship
+  User        User      @relation(fields: [createdBy], references: [id])
+}
+
+model Dish {
+  id           Int        @id @default(autoincrement())
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  name         String
+  description  String?
+  imageUrl     String?
+  category     String?
+  createdAt    DateTime   @default(now())
+  createdBy    User       @relation(fields: [createdById], references: [id])
+  createdById  Int
+  updatedAt    DateTime?
+  updatedBy    Int?
+  ratings      Rating[] // Relationship
+  comments     Comment[] // Relationship
+}
+
+model Rating {
+  id        Int       @id @default(autoincrement())
+  dish      Dish      @relation(fields: [dishId], references: [id])
+  dishId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  rating    Int
+  review    String?
+  status    String    @default("approved")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+}
+
+model Comment {
+  id              Int       @id @default(autoincrement())
+  dish            Dish      @relation(fields: [dishId], references: [id])
+  dishId          Int
+  user            User      @relation(fields: [userId], references: [id])
+  userId          Int
+  comment         String
+  parent          Comment?  @relation("CommentToParent", fields: [parentCommentId], references: [id])
+  parentCommentId Int?
+  children        Comment[] @relation("CommentToParent")
+  status          String    @default("approved")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime?
+  votes           Vote[] // Relationship
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  commentId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  voteType  String   @default("upvote")
+  createdAt DateTime @default(now())
+}
+
+model RestaurantSuggestion {
+  id            Int       @id @default(autoincrement())
+  name          String
+  address       String?
+  description   String?
+  suggestedBy   User      @relation(fields: [suggestedById], references: [id])
+  suggestedById Int
+  status        String    @default("pending")
+  createdAt     DateTime  @default(now())
+  processedAt   DateTime?
+  processedBy   Int?
+}
+
+model UserRole {
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int    @id
+  role   String @default("user")
+}

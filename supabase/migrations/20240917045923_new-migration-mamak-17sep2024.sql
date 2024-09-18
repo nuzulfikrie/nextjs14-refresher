@@ -1,3 +1,12 @@
+-- Users Table
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    avatar_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Restaurants Table
 CREATE TABLE restaurants (
@@ -11,9 +20,9 @@ CREATE TABLE restaurants (
     state VARCHAR(50),
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER REFERENCES auth.users(id),
+    created_by INTEGER REFERENCES users(id) ON DELETE CASCADE,
     updated_at TIMESTAMP,
-    updated_by INTEGER REFERENCES auth.users(id)
+    updated_by INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Dishes Table
@@ -25,16 +34,16 @@ CREATE TABLE dishes (
     image_url TEXT,
     category VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER REFERENCES auth.users(id),
+    created_by INTEGER REFERENCES users(id) ON DELETE CASCADE,
     updated_at TIMESTAMP,
-    updated_by INTEGER REFERENCES auth.users(id)
+    updated_by INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Ratings Table
 CREATE TABLE ratings (
     id SERIAL PRIMARY KEY,
     dish_id INTEGER REFERENCES dishes(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     rating INTEGER CHECK (rating >= 1 AND rating <= 5),
     review TEXT,
     status VARCHAR(20) DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected')),
@@ -47,7 +56,7 @@ CREATE TABLE ratings (
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
     dish_id INTEGER REFERENCES dishes(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     comment TEXT NOT NULL,
     parent_comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
     status VARCHAR(20) DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected')),
@@ -59,8 +68,8 @@ CREATE TABLE comments (
 CREATE TABLE votes (
     id SERIAL PRIMARY KEY,
     comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES auth.users(id) ON DELETE CASCADE,
-    vote_type VARCHAR(10) CHECK (vote_type IN ('upvote', 'downvote')),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    vote_type VARCHAR(10) DEFAULT 'upvote' CHECK (vote_type IN ('upvote', 'downvote')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (comment_id, user_id)
 );
@@ -71,17 +80,17 @@ CREATE TABLE restaurant_suggestions (
     name VARCHAR(100) NOT NULL,
     address TEXT,
     description TEXT,
-    suggested_by INTEGER REFERENCES auth.users(id),
+    suggested_by INTEGER REFERENCES users(id) ON DELETE CASCADE,
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     processed_at TIMESTAMP,
-    processed_by INTEGER REFERENCES auth.users(id)
+    processed_by INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- User Roles Table
 CREATE TABLE user_roles (
-    user_id INTEGER REFERENCES auth.users(id) PRIMARY KEY,
-    role VARCHAR(20) CHECK (role IN ('user', 'admin', 'moderator'))
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin', 'moderator'))
 );
 
 -- Create indexes for frequently queried columns
