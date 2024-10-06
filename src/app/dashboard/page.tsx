@@ -68,10 +68,10 @@ function SidebarContent() {
         </Link>
       </div>
       <nav className="flex-1 space-y-1 px-2 py-4">
-        {['Dashboard', 'Analytics', 'Team', 'Projects', 'Calendar', 'Documents', 'Reports'].map((item) => (
+        {['Dashboard', 'Analytics', 'Team', 'Projects', 'Calendar', 'Documents', 'Reports','Restaurant'].map((item) => (
           <Link
             key={item}
-            href={`/dashboard/${item.toLowerCase()}`}
+            href={`/${item.toLowerCase()}`}
             className="flex items-center rounded-lg px-2 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200"
           >
             {item}
